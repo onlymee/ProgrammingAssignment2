@@ -18,18 +18,29 @@
 ## makeCacheMatrix - construct a closure to represent a matrix and allow its
 ##                   inverse to be cached within the same closure.
 makeCacheMatrix <- function(x = matrix()) {
-    cache.inv <- NULL
+    cache.inverse <- NULL
+    set(x)  # Call setter it initialise for type checking
+    
+    ## set - sets the underlying matrix object    
     set <- function(y) {
+        if(!is.matrix(y))
+            stop(simpleError("y must be a matrix"))
         x <<- y
-        cache.inv <<- NULL
+        cache.inverse <<- NULL
     }
+
+    ## get - returns the underlying matrix object
     get <- function() x
-    setinv <- function(inv) cache.inv <<- inv
-    getinv <- function() { cache.inv }
+
+    ## setinverse - allows cached inverse to be set (or cleared)
+    setinverse <- function(inverse) cache.inverse <<- inverse
+    
+    
+    getinverse <- function() { cache.inverse }
 
     obj<-list(set = set, get = get,
-         setinv = setinv,
-         getinv = getinv)
+         setinverse = setinverse,
+         getinverse = getinverse)
     class(obj)<-"CacheMatrix"  # Assign a class attribute
     obj
 } # makeCacheMatrix
@@ -44,14 +55,14 @@ cacheSolve <- function(x, ...) {
         stop(simpleError("x must be a CacheMatrix"))
 
     ## Try to get the inverse direct from the CacheMatrix
-    inv <- x$getinv()
-    if(!is.null(inv)) {
+    inverse <- x$getinverse()
+    if(!is.null(inverse)) {
         message("getting cached inverse")
-        return(inv)
+        return(inverse)
     }
 
     # Otherwise calculate the inverse and store it in the CacheMatrix
-    inv <- solve(x$get(), ...)
-    x$setinv(inv)
-    inv
+    inverse <- solve(x$get(), ...)
+    x$setinverse(inverse)
+    inverse
 } # cacheSolve
