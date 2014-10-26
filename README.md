@@ -5,7 +5,7 @@ the Coursera, ["R Programming" course](https://class.coursera.org/rprog-008) by 
 
 The solution can be found in [cachematrix.R](./cachematrix.R)
 
-### Testing the cached matrix
+### Example: Testing the cached matrix
 The first function, `makeCacheMatrix` creates a special "matrix", which is
 really a list containing a function to
 
@@ -14,12 +14,13 @@ really a list containing a function to
 3.  set the value of the inverse
 4.  get the value of the inverse
 
+To test the code, change to the working directory where you have cloned the repository or otherwise download cachematrix.R and start R.  Then at the prompt run:
 <!-- -->
 
-    > source("cachematrix.R")
-    > somematrix<-matrix(c(1,2,3,2,3,2,3,2,1),nrow=3)
-    > mat<-makeCacheMatrix(somematrix)
-    > cacheSolve(mat)
+    source("cachematrix.R")
+    somematrix<-matrix(c(1,2,3,2,3,2,3,2,1),nrow=3)
+    mat<-makeCacheMatrix(somematrix)
+    cacheSolve(mat)
 
 which should give output like:
 
@@ -30,7 +31,7 @@ which should give output like:
 
 running the cacheSolve line again:
 
-    > cacheSolve(mat)
+    cacheSolve(mat)
     
 will give the same result but also show a message stating that the cached value was used:
 
