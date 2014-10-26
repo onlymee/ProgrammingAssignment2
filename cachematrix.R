@@ -19,7 +19,6 @@
 ##                   inverse to be cached within the same closure.
 makeCacheMatrix <- function(x = matrix()) {
     cache.inverse <- NULL
-    set(x)  # Call setter it initialise for type checking
     
     ## set - sets the underlying matrix object    
     set <- function(y) {
@@ -28,19 +27,20 @@ makeCacheMatrix <- function(x = matrix()) {
         x <<- y
         cache.inverse <<- NULL
     }
-
+    set(x)  # Call setter it initialise for type checking
+    
     ## get - returns the underlying matrix object
     get <- function() x
 
     ## setinverse - allows cached inverse to be set (or cleared)
     setinverse <- function(inverse) cache.inverse <<- inverse
-    
-    
+        
+    ## getinv - return the cached matrix inverse (may be NULL)
     getinverse <- function() { cache.inverse }
 
-    obj<-list(set = set, get = get,
-         setinverse = setinverse,
-         getinverse = getinverse)
+    ## return classed list of accessors for the closure
+    obj<-list(set = set, setinverse = setinverse,
+              get = get, getinverse = getinverse)
     class(obj)<-"CacheMatrix"  # Assign a class attribute
     obj
 } # makeCacheMatrix
