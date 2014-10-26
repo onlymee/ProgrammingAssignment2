@@ -54,7 +54,7 @@ cacheSolve <- function(x, ...) {
     if(!inherits(x,"CacheMatrix")) 
         stop(simpleError("x must be a CacheMatrix"))
 
-    ## Try to get the inverse direct from the CacheMatrix
+    ## Try to get the inverse direct from the CacheMatrix and return it
     inverse <- x$getinverse()
     if(!is.null(inverse)) {
         message("getting cached inverse")
