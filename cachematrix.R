@@ -18,7 +18,7 @@
 ## makeCacheMatrix - construct a closure to represent a matrix and its inverse
 ##                   with caching of the calculated inverse
 makeCacheMatrix <- function(x = matrix()) {
-    set(x)  #Call setter it initialise for type checking 
+    set(x)  # Call setter it initialise for type checking
 
     ## set - sets the underlying matrix object
     set <- function(y) {
@@ -27,16 +27,16 @@ makeCacheMatrix <- function(x = matrix()) {
         x <<- y
         cache.inv <<- NULL
     }
-    
+
     ## get - returns the underlying matrix object
     get <- function() x
-    
+
     ## setinv - allows cached inverse to be set (or cleared)
     setinv <- function(inv=NULL) cache.inv <<- inv
-    
+
     ## getinv - return the matrix inverse from the cache if available and if
     ##          not, calculating it using 'base::solve' by default
-    getinv <- function(... ,solver=solve) { 
+    getinv <- function(... ,solver=solve) {
         if (is.null(cache.inv))
         {
             cache.inv<<-do.call(solver,alist(x,...))
@@ -45,7 +45,7 @@ makeCacheMatrix <- function(x = matrix()) {
         }
         cache.inv
     }
-    
+
     ## return classed list of accessors for the closure
     obj<-list(set = set, setinv = setinv,
               get = get, getinv = getinv)
