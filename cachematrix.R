@@ -1,4 +1,4 @@
-# file ProgrammingAssignment2/cachematrix.R
+# file ProgrammingAssignment2/cachematrix_perexample.R
 # copyright (C) 2014 A. J. Mee
 #
 #  This program is free software; you can redistribute it and/or modify
@@ -15,50 +15,43 @@
 #  http://www.r-project.org/Licenses/
 #
 
-## makeCacheMatrix - construct a closure to represent a matrix and its inverse
-##                   with caching of the calculated inverse
+## makeCacheMatrix - construct a closure to represent a matrix and allow its
+##                   inverse to be cached within the same closure.
 makeCacheMatrix <- function(x = matrix()) {
-    set(x)  # Call setter it initialise for type checking
-
-    ## set - sets the underlying matrix object
+    cache.inv <- NULL
     set <- function(y) {
-        if(!is.matrix(y))
-            stop(simpleError("y must be a matrix"))
         x <<- y
         cache.inv <<- NULL
     }
-
-    ## get - returns the underlying matrix object
     get <- function() x
+    setinv <- function(inv) cache.inv <<- inv
+    getinv <- function() { cache.inv }
 
-    ## setinv - allows cached inverse to be set (or cleared)
-    setinv <- function(inv=NULL) cache.inv <<- inv
-
-    ## getinv - return the matrix inverse from the cache if available and if
-    ##          not, calculating it using 'base::solve' by default
-    getinv <- function(... ,solver=solve) {
-        if (is.null(cache.inv))
-        {
-            cache.inv<<-do.call(solver,alist(x,...))
-        } else {
-            message("using cached inverse")
-        }
-        cache.inv
-    }
-
-    ## return classed list of accessors for the closure
-    obj<-list(set = set, setinv = setinv,
-              get = get, getinv = getinv)
-    class(obj)<-"CacheMatrix"
+    obj<-list(set = set, get = get,
+         setinv = setinv,
+         getinv = getinv)
+    class(obj)<-"CacheMatrix"  # Assign a class attribute
     obj
 } # makeCacheMatrix
 
 
-## cacheSolve - primative helper to calculate the inverse of an matrix
+## cacheSolve - primative helper to return the inverse of an matrix
 ##              represented as a "CacheMatrix"
 cacheSolve <- function(x, ...) {
-    ## Return a matrix that is the inverse of 'x'
+
+    # Check the parameter x is of the expected type
     if(!inherits(x,"CacheMatrix")) 
         stop(simpleError("x must be a CacheMatrix"))
-    x$getinv()
+
+    ## Try to get the inverse direct from the CacheMatrix
+    inv <- x$getinv()
+    if(!is.null(inv)) {
+        message("getting cached inverse")
+        return(inv)
+    }
+
+    # Otherwise calculate the inverse and store it in the CacheMatrix
+    inv <- solve(x$get(), ...)
+    x$setinv(inv)
+    inv
 } # cacheSolve
